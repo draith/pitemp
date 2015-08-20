@@ -22,14 +22,23 @@ datasets:[ {
 	pointHighlightStroke: "rgba(220,220,220,1)",
 	data: [] } ] };
 
-function colourVal(temp, peak)
+function colourVal(temp, ramps)
 {
-	return Math.round(Math.max(0, 255 * (1 - (Math.abs(temp - peak)  / 20))));
+	var level = 1;
+	for (i = 0; i < ramps.length; i++)
+	{
+		var ramp = ramps[i];
+		level = Math.min(level, (temp - ramp[0]) / (ramp[1] - ramp[0]));
+	}
+	level = Math.max(0, Math.min(1, level));
+	return Math.round(level * 255);
 }
 
 function rgbVal(temp)
 {
-	return 'rgb(' + colourVal(temp,30) + ',' + colourVal(temp,10) + ',' + colourVal(temp,-10) + ')';
+	return 'rgb(' + colourVal(temp,[[10,20]]) 
+	        + ',' + colourVal(temp,[[-10,0],[30,20]]) 
+			+ ',' + colourVal(temp,[[10,0]]) + ')';
 }
 
 function padded(num)
