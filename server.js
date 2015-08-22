@@ -25,7 +25,7 @@ datasets:[ {
 function colourVal(temp, ramps)
 {
 	var level = 1;
-	for (i = 0; i < ramps.length; i++)
+	for (var i = 0; i < ramps.length; i++)
 	{
 		var ramp = ramps[i];
 		level = Math.min(level, (temp - ramp[0]) / (ramp[1] - ramp[0]));
@@ -102,16 +102,16 @@ function onRequest(request, response)
 		response.writeHead(200, {"Content-Type": "text/html"});
 		response.write(pagetop);
 		response.write('<body style="background-color:#036; color:white">');
-		response.write('<p style="font-size: 80px">');
-		response.write('At ' + nowString + ' : ' + tempspan(value) + '</p>');
-		response.write('<p>(' + fahrenheit.toFixed(1) + '&deg;F)</p>');
+		response.write('<p><span style="font-size: 80px">');
+		response.write('At ' + nowString + ' : ' + tempspan(value) + '</span>');
+		response.write(' (' + fahrenheit.toFixed(1) + '&deg;F) <a style="color:#f9f" href=".">(Refresh)</a></p>');
 		
 		// Get logged temps from last 24 hours....
 		data.labels = [];
 		data.datasets[0].data = [];
 		maxtemp = -100; mintemp = 100;
 		var files = fs.readdirSync(logpath);
-		for (i = 0; i < files.length; i++)
+		for (var i = 0; i < files.length; i++)
 		{
 			// First, yesterday's files
 			if (files[i] > nowString)
@@ -119,7 +119,7 @@ function onRequest(request, response)
 				addToData(files[i]);
 			}
 		}
-		for (i = 0; i < files.length; i++)
+		for (var i = 0; i < files.length; i++)
 		{
 			// Then, today's files
 			if (files[i] <= nowString)
@@ -134,7 +134,7 @@ function onRequest(request, response)
 		response.write('window.onload = function(){');
 		response.write('var ctx = document.getElementById("myChart").getContext("2d");');
 		response.write('window.myLineChart = new Chart(ctx).Line(data, { ');
-		response.write('scaleFontSize: 20, scaleFontColor:"#cff", responsive: true, maintainAspectRatio: false, pointHitDetectionRadius : 5 } );');
+		response.write('scaleFontSize: 30, scaleFontColor:"#cff", responsive: true, maintainAspectRatio: false, pointHitDetectionRadius : 5 } );');
 		response.write('}');
 		response.write('</script>');
 	    response.write('<div><canvas id="myChart" width="400" height="600"></canvas></div>');
