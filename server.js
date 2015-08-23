@@ -7,9 +7,10 @@ var pagetop = fs.readFileSync('pagetop.html');
 var index;
 var urlpath;
 var logpath = '/home/pi/usbdrv/templog';
-var maxtemp;
-var mintemp;
+var maxtemp, mintemp;
 var maxtime, mintime;
+var oldmaxtemp, oldmintemp;
+var oldmaxtime, oldmintime;
 
 // Graph data
 var data = { labels: [],
@@ -22,12 +23,12 @@ datasets:[ {
 	pointHighlightStroke: "rgba(220,220,220,1)",
 	data: [] }
     , {
-	fillColor: "rgba(220,220,220,0.1)",
-	strokeColor: "rgba(220,220,220,0.5)",
-	pointColor: "rgba(220,220,220,0.5)",
+	fillColor: "rgba(220,220,220,0)",
+	strokeColor: "rgba(180,150,80,0.5)",
+	pointColor: "rgba(180,150,80,0.5)",
 	pointStrokeColor: "#fff",
 	pointHighlightFill: "#fff",
-	pointHighlightStroke: "rgba(220,220,220,1)",
+	pointHighlightStroke: "rgba(180,150,80,1)",
 	data: [] }	] };
 
 function colourVal(temp, ramps)
@@ -62,13 +63,19 @@ function hhmmstring(date)
 
 function getLoggedReading(filename)
 {
-	var reading = fs.readFileSync(path.join(logpath, filename),'utf8');
-	return (parseInt(reading) / 1000);
+	try {
+		var reading = fs.readFileSync(path.join(logpath, filename),'utf8');
+		return (parseInt(reading) / 1000);
+	}
+	catch (e) {
+		return  null;
+	}
 }
 
 function addToData(filename)
 {
 	var reading = getLoggedReading(filename);
+	var oldreading = getLoggedReading(path.join('yesterday',filename));
 	if (reading > maxtemp)
 	{
 		maxtemp = reading;
@@ -79,8 +86,22 @@ function addToData(filename)
 		mintemp = reading;
 		mintime = filename;
 	}
+	if (oldreading !== null)
+	{
+		if (oldreading > oldmaxtemp)
+		{
+			oldmaxtemp = oldreading;
+			oldmaxtime = filename;
+		}
+		else if (oldreading < oldmintemp)
+		{
+			oldmintemp = oldreading;
+			oldmintime = filename;
+		}
+	}
 	data.labels.push(filename.substr(3) == '00' ? filename : '');
 	data.datasets[0].data.push(reading.toFixed(1));
+	data.datasets[1].data.push((oldreading === null ? reading : oldreading).toFixed(1));
 }
 
 function tempspan(temp)
@@ -111,12 +132,13 @@ function onRequest(request, response)
 		response.write('<body style="background-color:#036; color:white">');
 		response.write('<p><span style="font-size: 80px">');
 		response.write('At ' + nowString + ' : ' + tempspan(value) + '</span>');
-		response.write(' (' + fahrenheit.toFixed(1) + '&deg;F) <a style="color:#f9f" href=".">(Refresh)</a></p>');
+		response.write(' (' + fahrenheit.toFixed(1) + '&deg;F) <a href=".">(Refresh)</a></p>');
 		
 		// Get logged temps from last 24 hours....
 		data.labels = [];
 		data.datasets[0].data = [];
 		maxtemp = -100; mintemp = 100;
+		oldmaxtemp = -100; oldmintemp = 100;
 		var files = fs.readdirSync(logpath);
 		// First, yesterday's files (time > now)
 		var i = 0;
@@ -138,6 +160,8 @@ function onRequest(request, response)
 		}
 		response.write('<p>24-hours: Max: ' + tempspan(maxtemp) + ' (' + maxtime + ')');
 		response.write(' Min: ' + tempspan(mintemp) + ' (' + mintime + ')</p>');
+		response.write('<p class="old">Previous: Max: ' + tempspan(oldmaxtemp) + ' (' + oldmaxtime + ')');
+		response.write(' Min: ' + tempspan(oldmintemp) + ' (' + oldmintime + ')</p>');
 		response.write('<script>');
 		response.write('var data = ' + JSON.stringify(data) + ';');
 		response.write('window.onload = function(){');
@@ -147,7 +171,7 @@ function onRequest(request, response)
 		response.write('}');
 		response.write('</script>');
 	    response.write('<div><canvas id="myChart" width="400" height="600"></canvas></div>');
-		response.write('<p style="font-size:20px">Powered by <a style="font-size:30px" href="http://www.chartjs.org">Chart.js</a></p>');
+		response.write('<p class="credits">Graph powered by <a target="_blank" href="http://www.chartjs.org">Chart.js</a></p>');
 		response.end('</body></html>');
 	}
 	else
