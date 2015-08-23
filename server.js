@@ -6,7 +6,7 @@ var mimetypes = require("mime-types");
 var pagetop = fs.readFileSync('pagetop.html');
 var index;
 var urlpath;
-var logpath = '/var/ram/templog';
+var logpath = '/home/pi/usbdrv/templog';
 var maxtemp;
 var mintemp;
 var maxtime, mintime;
@@ -20,7 +20,15 @@ datasets:[ {
 	pointStrokeColor: "#fff",
 	pointHighlightFill: "#fff",
 	pointHighlightStroke: "rgba(220,220,220,1)",
-	data: [] } ] };
+	data: [] }
+    , {
+	fillColor: "rgba(220,220,220,0.1)",
+	strokeColor: "rgba(220,220,220,0.5)",
+	pointColor: "rgba(220,220,220,0.5)",
+	pointStrokeColor: "#fff",
+	pointHighlightFill: "#fff",
+	pointHighlightStroke: "rgba(220,220,220,1)",
+	data: [] }	] };
 
 function colourVal(temp, ramps)
 {
@@ -49,13 +57,12 @@ function padded(num)
 
 function hhmmstring(date)
 {
-	return padded(date.getHours()) + ':' + padded(date.getMinutes());
+	return padded(date.getHours()) + '.' + padded(date.getMinutes());
 }
 
 function getLoggedReading(filename)
 {
 	var reading = fs.readFileSync(path.join(logpath, filename),'utf8');
-	reading = reading.substr(reading.lastIndexOf('=')+1);
 	return (parseInt(reading) / 1000);
 }
 
@@ -79,7 +86,7 @@ function addToData(filename)
 function tempspan(temp)
 {
 	return '<span style="' +
-	(temp <= 0 ? 'background-color:white; ': '') +
+	(temp <= 0 ? 'text-shadow:0px 0px 10px white; ': '') +
 	'color:' + rgbVal(temp) + '">' + temp.toFixed(1) + '&deg;C</span>';
 }
 
@@ -111,21 +118,23 @@ function onRequest(request, response)
 		data.datasets[0].data = [];
 		maxtemp = -100; mintemp = 100;
 		var files = fs.readdirSync(logpath);
-		for (var i = 0; i < files.length; i++)
+		// First, yesterday's files (time > now)
+		var i = 0;
+		while (files[i] <= nowString && i < files.length)
 		{
-			// First, yesterday's files
-			if (files[i] > nowString)
+			i++;
+		}
+		for (; i < files.length; i++)
+		{
+			if (files[i] != 'yesterday')
 			{
 				addToData(files[i]);
 			}
 		}
-		for (var i = 0; i < files.length; i++)
+		// Then, today's files
+		for (i = 0; i < files.length && files[i] <= nowString; i++)
 		{
-			// Then, today's files
-			if (files[i] <= nowString)
-			{
-				addToData(files[i]);
-			}
+			addToData(files[i]);
 		}
 		response.write('<p>24-hours: Max: ' + tempspan(maxtemp) + ' (' + maxtime + ')');
 		response.write(' Min: ' + tempspan(mintemp) + ' (' + mintime + ')</p>');
@@ -138,6 +147,7 @@ function onRequest(request, response)
 		response.write('}');
 		response.write('</script>');
 	    response.write('<div><canvas id="myChart" width="400" height="600"></canvas></div>');
+		response.write('<p style="font-size:20px">Powered by <a style="font-size:30px" href="http://www.chartjs.org">Chart.js</a></p>');
 		response.end('</body></html>');
 	}
 	else
