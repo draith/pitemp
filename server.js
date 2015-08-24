@@ -11,6 +11,7 @@ var maxtemp, mintemp;
 var maxtime, mintime;
 var oldmaxtemp, oldmintemp;
 var oldmaxtime, oldmintime;
+var startMaxCheckTime = '06.00'; // Don't count earlier times (e.g. midnight) as today's max.
 
 // Graph data
 var data = { labels: [],
@@ -19,14 +20,14 @@ datasets:[ {
 	strokeColor: "rgba(220,220,220,1)",
 	pointColor: "rgba(220,220,220,1)",
 	pointStrokeColor: "#fff",
-	pointHighlightFill: "#fff",
+	pointHighlightFill: "#f66",
 	pointHighlightStroke: "rgba(220,220,220,1)",
 	data: [] }
     , {
 	fillColor: "rgba(220,220,220,0)",
-	strokeColor: "rgba(180,150,80,0.5)",
-	pointColor: "rgba(180,150,80,0.5)",
-	pointStrokeColor: "#fff",
+	strokeColor: "rgba(180,120,80,0.75)",
+	pointColor: "rgba(180,120,80,0.75)",
+	pointStrokeColor: "rgba(180,120,80,0.75)",
 	pointHighlightFill: "#fff",
 	pointHighlightStroke: "rgba(180,150,80,1)",
 	data: [] }	] };
@@ -72,30 +73,47 @@ function getLoggedReading(filename)
 	}
 }
 
-function addToData(filename)
+function addToData(filename,nowString)
 {
 	var reading = getLoggedReading(filename);
 	var oldreading = getLoggedReading(path.join('yesterday',filename));
-	if (reading > maxtemp)
+	if (filename <= nowString)
 	{
-		maxtemp = reading;
-		maxtime = filename;
-	}
-	else if (reading < mintemp)
-	{
-		mintemp = reading;
-		mintime = filename;
-	}
-	if (oldreading !== null)
-	{
-		if (oldreading > oldmaxtemp)
+		// For time <= now, reading is from today, and oldreading from yesterday.
+		if (reading > maxtemp && filename >= startMaxCheckTime)
 		{
-			oldmaxtemp = oldreading;
+			maxtemp = reading;
+			maxtime = filename;
+		}
+		else if (reading < mintemp)
+		{
+			mintemp = reading;
+			mintime = filename;
+		}
+		if (oldreading !== null)
+		{
+			if (oldreading > oldmaxtemp && filename >= startMaxCheckTime)
+			{
+				oldmaxtemp = oldreading;
+				oldmaxtime = filename;
+			}
+			else if (oldreading < oldmintemp)
+			{
+				oldmintemp = oldreading;
+				oldmintime = filename;
+			}
+		}
+	}
+	else // For time > now, reading is from yesterday.
+	{
+		if (reading > oldmaxtemp)
+		{
+			oldmaxtemp = reading;
 			oldmaxtime = filename;
 		}
-		else if (oldreading < oldmintemp)
+		else if (reading < oldmintemp)
 		{
-			oldmintemp = oldreading;
+			oldmintemp = reading;
 			oldmintime = filename;
 		}
 	}
@@ -137,6 +155,7 @@ function onRequest(request, response)
 		// Get logged temps from last 24 hours....
 		data.labels = [];
 		data.datasets[0].data = [];
+		data.datasets[1].data = [];
 		maxtemp = -100; mintemp = 100;
 		oldmaxtemp = -100; oldmintemp = 100;
 		var files = fs.readdirSync(logpath);
@@ -150,17 +169,21 @@ function onRequest(request, response)
 		{
 			if (files[i] != 'yesterday')
 			{
-				addToData(files[i]);
+				addToData(files[i],nowString);
 			}
 		}
 		// Then, today's files
 		for (i = 0; i < files.length && files[i] <= nowString; i++)
 		{
-			addToData(files[i]);
+			addToData(files[i],nowString);
 		}
-		response.write('<p>24-hours: Max: ' + tempspan(maxtemp) + ' (' + maxtime + ')');
+		response.write('<p>Today:');
+		if (nowString > startMaxCheckTime)
+		{
+			response.write(' Max: ' + tempspan(maxtemp) + ' (' + maxtime + ')');
+		}
 		response.write(' Min: ' + tempspan(mintemp) + ' (' + mintime + ')</p>');
-		response.write('<p class="old">Previous: Max: ' + tempspan(oldmaxtemp) + ' (' + oldmaxtime + ')');
+		response.write('<p class="old">Yesterday: Max: ' + tempspan(oldmaxtemp) + ' (' + oldmaxtime + ')');
 		response.write(' Min: ' + tempspan(oldmintemp) + ' (' + oldmintime + ')</p>');
 		response.write('<script>');
 		response.write('var data = ' + JSON.stringify(data) + ';');
