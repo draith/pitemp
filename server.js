@@ -16,6 +16,7 @@ var startMaxCheckTime = '06.00'; // Don't count earlier times (e.g. midnight) as
 // Graph data
 var data = { labels: [],
 datasets:[ {
+  label: "Last 24h",
 	fillColor: "rgba(220,220,220,0.2)",
 	strokeColor: "rgba(220,220,220,1)",
 	pointColor: "rgba(220,220,220,1)",
@@ -24,6 +25,7 @@ datasets:[ {
 	pointHighlightStroke: "rgba(220,220,220,1)",
 	data: [] }
     , {
+  label: "Prev 24h",
 	fillColor: "rgba(220,220,220,0)",
 	strokeColor: "rgba(180,120,80,0.75)",
 	pointColor: "rgba(180,120,80,0.75)",
@@ -193,7 +195,7 @@ function onRequest(request, response)
 		response.write('scaleFontSize: 30, scaleFontColor:"#cff", responsive: true, maintainAspectRatio: false, pointHitDetectionRadius : 5 } );');
 		response.write('}');
 		response.write('</script>');
-	    response.write('<div><canvas id="myChart" width="400" height="600"></canvas></div>');
+	  response.write('<div><canvas id="myChart" width="400" height="600"></canvas></div>');
 		response.write('<p class="credits">Graph powered by <a target="_blank" href="http://www.chartjs.org">Chart.js</a></p>');
 		response.end('</body></html>');
 	}
@@ -208,7 +210,7 @@ function onRequest(request, response)
 			stats = fs.lstatSync(filename); // throws if path doesn't exist
 			mimeType = mimetypes.lookup(filename);
 		} catch (e) {
-			console.log('Non-existent file request: ' + filename);
+			// console.log('Non-existent file request: ' + filename);
 			response.writeHead(404, {'Content-Type': 'text/plain'});
 			response.write('404 Not Found\n');
 			response.end();
