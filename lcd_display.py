@@ -8,7 +8,7 @@ except RuntimeError:
 
 data = 16
 clock = 18
-clkwait = 0.000001
+clkwait = 0.0001
 
 MODE_CHR = True
 MODE_CMD = False
