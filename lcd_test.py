@@ -8,7 +8,7 @@ except RuntimeError:
 
 data = 16
 clock = 18
-clkwait = 0.0001
+clkwait = 1 # 0.001
 
 MODE_CHR = True
 MODE_CMD = False
@@ -23,15 +23,33 @@ def main():
   GPIO.setmode(GPIO.BOARD)
   GPIO.setup((data,clock), GPIO.OUT, initial=GPIO.LOW)
   # Initialise display
-  lcd_init()
-  
+  # lcd_init()
+  val = None
   while True:
-    send_string("Raspberry Pi", LINE_1)
-    send_string("16x2 LCD Test", LINE_2)
-    time.sleep(3)
-    send_string("0123456789ABCDEF", LINE_1)
-    send_string("abcdefghijklmnop", LINE_2)
-    time.sleep(3)
+    try:
+      ip = input("data:")
+      if (ip == 'q'):
+        break
+      val = ip
+    except SyntaxError:
+      print 'repeat'
+    if (val != None):
+      print 'clockdata', val
+      clockdata(val)
+    # print 'high'
+    # GPIO.output(clock,GPIO.HIGH)
+    # GPIO.output(data,GPIO.HIGH)
+    # time.sleep(1)
+    # print 'low'
+    # GPIO.output(clock,GPIO.LOW)
+    # GPIO.output(data,GPIO.LOW)
+    # time.sleep(1)
+    # send_string("Raspberry Pi", LINE_1)
+    # send_string("16x2 LCD Test", LINE_2)
+    # time.sleep(3)
+    # send_string("0123456789ABCDEF", LINE_1)
+    # send_string("abcdefghijklmnop", LINE_2)
+    # time.sleep(3)
     
 
 def setdata(value):
@@ -94,12 +112,12 @@ def send_string(message,line):
   for i in range(LCD_WIDTH):
     send_byte(ord(message[i]), MODE_CHR)
 
-# if __name__ == '__main__':
-  # try:
-    # main()
-  # except KeyboardInterrupt:
-    # pass
-  # finally:
+if __name__ == '__main__':
+  try:
+    main()
+  except KeyboardInterrupt:
+    pass
+  finally:
     # send_byte(0x01, MODE_CMD)
     # send_string("Goodbye!", LINE_1)
-    # GPIO.cleanup((data,clock))
+    GPIO.cleanup((data,clock))
