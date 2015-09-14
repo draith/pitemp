@@ -93,13 +93,3 @@ def send_string(message,line):
   # Send string
   for i in range(LCD_WIDTH):
     send_byte(ord(message[i]), MODE_CHR)
-
-# if __name__ == '__main__':
-  # try:
-    # main()
-  # except KeyboardInterrupt:
-    # pass
-  # finally:
-    # send_byte(0x01, MODE_CMD)
-    # send_string("Goodbye!", LINE_1)
-    # GPIO.cleanup((data,clock))

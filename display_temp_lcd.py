@@ -2,7 +2,8 @@
 import io
 import time
 import os.path
-execfile("/home/pi/pitemp/lcd_display.py")
+from lcd_display import *
+
 maxfilepath = '/var/ram/maxtemp.txt'
 minfilepath = '/var/ram/mintemp.txt'
 

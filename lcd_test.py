@@ -27,15 +27,16 @@ def main():
   val = None
   while True:
     try:
-      ip = input("data:")
+      ip = raw_input("message:")
       if (ip == 'q'):
         break
       val = ip
     except SyntaxError:
       print 'repeat'
     if (val != None):
-      print 'clockdata', val
-      clockdata(val)
+      send_string(val,LINE_2)
+#      print 'clockdata', val
+#      clockdata(val)
     # print 'high'
     # GPIO.output(clock,GPIO.HIGH)
     # GPIO.output(data,GPIO.HIGH)
