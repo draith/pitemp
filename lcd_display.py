@@ -17,23 +17,6 @@ LCD_WIDTH = 16
 LINE_1 = 0x80 # LCD RAM Address
 LINE_2 = 0xC0 # LCD RAM Address
 
-def main():
-  # Set up GPIO pins
-  GPIO.setwarnings(False)
-  GPIO.setmode(GPIO.BOARD)
-  GPIO.setup((data,clock), GPIO.OUT, initial=GPIO.LOW)
-  # Initialise display
-  lcd_init()
-  
-  while True:
-    send_string("Raspberry Pi", LINE_1)
-    send_string("16x2 LCD Test", LINE_2)
-    time.sleep(3)
-    send_string("0123456789ABCDEF", LINE_1)
-    send_string("abcdefghijklmnop", LINE_2)
-    time.sleep(3)
-    
-
 def setdata(value):
   GPIO.output(data, GPIO.HIGH if value else GPIO.LOW)
   
