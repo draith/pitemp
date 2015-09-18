@@ -7,18 +7,14 @@ BACKLOGFILE='/home/pi/pitemp/backlog.txt'
 NEWBACKLOG='/var/ram/backlog.txt'
 BACKLOGLOGFILE='/home/pi/pitemp/backlog.log'
 TEMPVAL=${TEMPSTRING##*=}
-if [ "OK" != "OK" ]
-then
-  # Save reading in local file.
-  mv $LOGDIR/$FILENAME $LOGDIR/yesterday/$FILENAME
-  echo $TEMPVAL > $LOGDIR/$FILENAME
-  chmod a+w $LOGDIR/$FILENAME
-  # Send reading to web database
-  TIMESTAMP=$(date -u "+%Y-%m-%d%%20%H:%M:00")
-  RESPONSE=$(curl http://www.mekeke.co.uk/pitemp/logtemp.php?id=mypicam\&timestamp=$TIMESTAMP\&reading=$TEMPVAL)
-else
-  RESPONSE="OK"
-fi
+
+# Save reading in local file.
+mv $LOGDIR/$FILENAME $LOGDIR/yesterday/$FILENAME
+echo $TEMPVAL > $LOGDIR/$FILENAME
+chmod a+w $LOGDIR/$FILENAME
+# Send reading to web database
+TIMESTAMP=$(date -u "+%Y-%m-%d%%20%H:%M:00")
+RESPONSE=$(curl http://www.mekeke.co.uk/pitemp/logtemp.php?id=mypicam\&timestamp=$TIMESTAMP\&reading=$TEMPVAL)
 
 if [ "$RESPONSE" != "OK" ]
 then
