@@ -1,4 +1,4 @@
-#/bin/sh
+#!/bin/sh
 FILENAME=$(date +"%H.%M")
 LOGDIR='/home/pi/usbdrv/templog'
 SOURCE='/sys/bus/w1/devices/28-000007099503/w1_slave'
@@ -12,9 +12,12 @@ TEMPVAL=${TEMPSTRING##*=}
 mv $LOGDIR/$FILENAME $LOGDIR/yesterday/$FILENAME
 echo $TEMPVAL > $LOGDIR/$FILENAME
 chmod a+w $LOGDIR/$FILENAME
+
 # Send reading to web database
+# REQUIRED ENVIRONMENT VARIABLES URL1 and URL2 to compile URL for uploading.
+# e.g. full URL = "http://www.myurl.com/upload.php?time=$TIMESTAMP\&temp=$TEMPVAL"
 TIMESTAMP=$(date -u "+%Y-%m-%d%%20%H:%M:00")
-RESPONSE=$(curl http://www.mekeke.co.uk/pitemp/logtemp.php?id=mypicam\&timestamp=$TIMESTAMP\&reading=$TEMPVAL)
+RESPONSE=$(curl $URL1$TIMESTAMP$URL2$TEMPVAL)
 
 if [ "$RESPONSE" != "OK" ]
 then
@@ -32,7 +35,7 @@ else
       echo "$TIMESTAMP $TEMPVAL" >> $NEWBACKLOG
     else
       echo "Uploading backlog" $TIMESTAMP $TEMPVAL >> $BACKLOGLOGFILE
-      RESPONSE=$(curl http://www.mekeke.co.uk/pitemp/logtemp.php?id=mypicam\&timestamp=$TIMESTAMP\&reading=$TEMPVAL)
+      RESPONSE=$(curl $URL1$TIMESTAMP$URL2$TEMPVAL)
       if [ "$RESPONSE" != "OK" ]
       then
         echo "RESPONSE =" $RESPONSE >> $BACKLOGLOGFILE
