@@ -17,7 +17,7 @@ chmod a+w $LOGDIR/$FILENAME
 # REQUIRED ENVIRONMENT VARIABLES URL1 and URL2 to compile URL for uploading.
 # e.g. full URL = "http://www.myurl.com/upload.php?time=$TIMESTAMP\&temp=$TEMPVAL"
 TIMESTAMP=$(date -u "+%Y-%m-%d%%20%H:%M:00")
-RESPONSE=$(curl $URL1$TIMESTAMP$URL2$TEMPVAL)
+RESPONSE=$(curl http://www.mekeke.co.uk/pitemp/logtemp.php?id=mypicam\&timestamp=$TIMESTAMP\&reading=$TEMPVAL)
 
 if [ "$RESPONSE" != "OK" ]
 then
@@ -35,7 +35,7 @@ else
       echo "$TIMESTAMP $TEMPVAL" >> $NEWBACKLOG
     else
       echo "Uploading backlog" $TIMESTAMP $TEMPVAL >> $BACKLOGLOGFILE
-      RESPONSE=$(curl $URL1$TIMESTAMP$URL2$TEMPVAL)
+      RESPONSE=$(curl http://www.mekeke.co.uk/pitemp/logtemp.php?id=mypicam\&timestamp=$TIMESTAMP\&reading=$TEMPVAL)
       if [ "$RESPONSE" != "OK" ]
       then
         echo "RESPONSE =" $RESPONSE >> $BACKLOGLOGFILE
