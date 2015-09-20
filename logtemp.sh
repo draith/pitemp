@@ -15,6 +15,9 @@ echo $TEMPVAL > $LOGDIR/$FILENAME
 chmod a+w $LOGDIR/$FILENAME
 
 # Send reading to web database
+# REQUIRED ENVIRONMENT VARIABLES URL1 and URL2 to compile URL for uploading.
+# e.g. full URL = "http://www.myurl.com/upload.php?time=$TIMESTAMP\&temp=$TEMPVAL"
+
 RESPONSE=$(curl $URL1$TIMESTAMP$URL2$TEMPVAL)
 # echo "Sent:" $URL1$TIMESTAMP$URL2$TEMPVAL
 # echo "Response:" $RESPONSE
