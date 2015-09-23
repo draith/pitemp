@@ -25,7 +25,7 @@ def mid_button_pressed(channel):
   global mid_count
   if GPIO.input(mid_button) == GPIO.LOW:
     mid_count += 1
-    print('Left button pressed %s times'%mid_count)
+    print('Middle button pressed %s times'%mid_count)
 
   # Set up GPIO pin
 GPIO.setwarnings(False)
