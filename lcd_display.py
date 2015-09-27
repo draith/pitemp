@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import io
 import time
+import os
 try:
   import RPi.GPIO as GPIO
 except RuntimeError:
@@ -9,6 +10,7 @@ except RuntimeError:
 data = 16
 clock = 18
 clkwait = 0.0001
+lcd_lock_file_path = '/var/ram/lcd_locked'
 
 MODE_CHR = True
 MODE_CMD = False
@@ -16,6 +18,16 @@ MODE_CMD = False
 LCD_WIDTH = 16
 LINE_1 = 0x80 # LCD RAM Address
 LINE_2 = 0xC0 # LCD RAM Address
+
+def lock_lcd():
+  f = open(lcd_lock_file_path,'w')
+  f.close()
+
+def unlock_lcd():
+  os.remove(lcd_lock_file_path)
+
+def lcd_is_locked():
+  return os.path.exists(lcd_lock_file_path)
 
 def setdata(value):
   GPIO.output(data, GPIO.HIGH if value else GPIO.LOW)
