@@ -42,7 +42,7 @@ def pycam_running():
   return True if tmp.count('pycam.py') > 0 else False
 
 def disp_status():
-  send_string("Status: %s"%("ON" if pycam_running() else "OFF"), LINE_2)
+  send_string("Status: %s"%("GREEN" if pycam_running() else "RED"), LINE_2)
 
 def mid_button_pressed(channel):
   if switching_cam and GPIO.input(mid_button) == GPIO.LOW:
