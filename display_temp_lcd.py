@@ -64,4 +64,6 @@ def show_temp():
  
 # Don't do anything if the LCD is locked by another program.
 if __name__ == "__main__" and not lcd_is_locked():
+  lock_lcd()
   show_temp()
+  unlock_lcd()

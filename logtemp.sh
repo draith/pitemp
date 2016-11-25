@@ -19,10 +19,10 @@ chmod a+w $LOGDIR/$FILENAME
 # e.g. full URL = "http://www.myurl.com/upload.php?time=$TIMESTAMP\&temp=$TEMPVAL"
 
 RESPONSE=$(curl $URL1$TIMESTAMP$URL2$TEMPVAL)
-# echo "Sent:" $URL1$TIMESTAMP$URL2$TEMPVAL
-# echo "Response:" $RESPONSE
+ echo "Sent:" $URL1$TIMESTAMP$URL2$TEMPVAL
+ echo "Response:" $RESPONSE
 
-if [ "$RESPONSE" != "OK" ]
+ if [ "$RESPONSE" != "OK" ]
 then
   # FAILED: Append date and reading to backlog file
   mail -s "temp log failed" draith2001@gmail.com

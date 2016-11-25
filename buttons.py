@@ -25,6 +25,9 @@ def left_button_pressed(channel):
     # Toggle display between camera control and temperature display
     switching_cam = not switching_cam
     if switching_cam:
+      # Wait while temperature display is updating
+      while lcd_is_locked():
+        time.sleep(0.3);
       # Prevent temperature display from overwriting status display.
       lock_lcd()
       # Display pycam status.
