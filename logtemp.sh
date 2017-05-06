@@ -22,7 +22,7 @@ RESPONSE=$(curl $URL1$TIMESTAMP$URL2$TEMPVAL)
  echo "Sent:" $URL1$TIMESTAMP$URL2$TEMPVAL
  echo "Response:" $RESPONSE
 
- if [ "$RESPONSE" != "OK" ]
+if [ "$RESPONSE" != "OK" ]
 then
   # FAILED: Append date and reading to backlog file
   mail -s "temp log failed" draith2001@gmail.com
@@ -31,6 +31,7 @@ then
 else
   # Success. Now upload any backlog.
   while read line; do
+    GOT_BACKLOG="YES"
     TIMESTAMP=${line%% *}
     TEMPVAL=${line##* }
     if [ "$RESPONSE" != "OK" ]
@@ -53,7 +54,12 @@ else
   then
     echo "Updating" $BACKLOGFILE
     mv $NEWBACKLOG $BACKLOGFILE
+    mail -s "temp log backlog failed to clear" draith2001@gmail.com
   else
     echo -n > $BACKLOGFILE
+    if [ "$GOT_BACKLOG" == "YES" ]
+    then
+      mail -s "temp log backlog cleared" draith2001@gmail.com
+    fi
   fi
 fi

@@ -45,7 +45,20 @@ def pycam_running():
   return True if tmp.count('pycam.py') > 0 else False
 
 def disp_status():
-  send_string("Status: %s"%("GREEN" if pycam_running() else "RED"), LINE_2)
+  if time.strftime("%d%m") == "3011":
+    lcd_init()
+    send_string("HAPPY BIRTHDAY", LINE_1)
+    send_string("HOLLY! %s"%("GREEN" if pycam_running() else "RED"), LINE_2)
+  else if time.strftime("%d%m") == "2307":
+    lcd_init()
+    send_string("HAPPY BIRTHDAY", LINE_1)
+    send_string("LUCY! %s"%("GREEN" if pycam_running() else "RED"), LINE_2)
+  else if time.strftime("%d%m") == "3107":
+    lcd_init()
+    send_string("HAPPY BIRTHDAY", LINE_1)
+    send_string("EWAN! %s"%("GREEN" if pycam_running() else "RED"), LINE_2)
+  else:
+    send_string("Status: %s"%("GREEN" if pycam_running() else "RED"), LINE_2)
 
 def mid_button_pressed(channel):
   if switching_cam and GPIO.input(mid_button) == GPIO.LOW:
@@ -53,6 +66,8 @@ def mid_button_pressed(channel):
     try:
       # Toggle pycam state..
       subprocess.check_call(["sudo","/etc/init.d/pycam", "stop" if pycam_running() else "start"])
+      # Prevent temperature display from overwriting status display.
+      lock_lcd()
       disp_status()
     except:
       send_string("Status: EXCEPTION", LINE_2)

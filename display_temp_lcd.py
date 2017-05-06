@@ -62,8 +62,12 @@ def show_temp():
     send_string("    Lo {1:.1f}".format(maxtemp,mintemp), LINE_2)
 #  GPIO.cleanup((data,clock)) # occasionally messes up the display..
  
-# Don't do anything if the LCD is locked by another program.
-if __name__ == "__main__" and not lcd_is_locked():
-  lock_lcd()
-  show_temp()
+
+if __name__ == "__main__":
+  # Don't do anything this time if the LCD is locked by buttons.py
+  # - just unlock so next run will display
+  if not lcd_is_locked():
+    lock_lcd()
+    show_temp()
+
   unlock_lcd()
