@@ -66,8 +66,10 @@ def show_temp():
 if __name__ == "__main__":
   # Don't do anything this time if the LCD is locked by buttons.py
   # - just unlock so next run will display
-  if not lcd_is_locked():
+  if lcd_is_locked():
+    unlock_lcd()
+  else:
     lock_lcd()
     show_temp()
-
-  unlock_lcd()
+    set_switching_cam(False)
+    unlock_lcd()

@@ -16,15 +16,15 @@ left_button = 11
 mid_button = 13
 both_buttons = (left_button,mid_button)
 
-switching_cam = False
+#switching_cam = False
 
 def left_button_pressed(channel):
-  global switching_cam
+  #global switching_cam
   
   if GPIO.input(left_button) == GPIO.LOW:
     # Toggle display between camera control and temperature display
-    switching_cam = not switching_cam
-    if switching_cam:
+    set_switching_cam(not switching_cam())
+    if switching_cam():
       # Wait while temperature display is updating
       while lcd_is_locked():
         time.sleep(0.3);
@@ -49,11 +49,11 @@ def disp_status():
     lcd_init()
     send_string("HAPPY BIRTHDAY", LINE_1)
     send_string("HOLLY! %s"%("GREEN" if pycam_running() else "RED"), LINE_2)
-  else if time.strftime("%d%m") == "2307":
+  elif time.strftime("%d%m") == "2307":
     lcd_init()
     send_string("HAPPY BIRTHDAY", LINE_1)
     send_string("LUCY! %s"%("GREEN" if pycam_running() else "RED"), LINE_2)
-  else if time.strftime("%d%m") == "3107":
+  elif time.strftime("%d%m") == "3107":
     lcd_init()
     send_string("HAPPY BIRTHDAY", LINE_1)
     send_string("EWAN! %s"%("GREEN" if pycam_running() else "RED"), LINE_2)
@@ -61,7 +61,7 @@ def disp_status():
     send_string("Status: %s"%("GREEN" if pycam_running() else "RED"), LINE_2)
 
 def mid_button_pressed(channel):
-  if switching_cam and GPIO.input(mid_button) == GPIO.LOW:
+  if switching_cam() and GPIO.input(mid_button) == GPIO.LOW:
     send_string("Status: ...", LINE_2)
     try:
       # Toggle pycam state..

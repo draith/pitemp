@@ -11,6 +11,7 @@ data = 16
 clock = 18
 clkwait = 0.0001
 lcd_lock_file_path = '/var/ram/lcd_locked'
+switching_cam_file_path = '/var/ram/switching_cam'
 
 MODE_CHR = True
 MODE_CMD = False
@@ -19,15 +20,28 @@ LCD_WIDTH = 16
 LINE_1 = 0x80 # LCD RAM Address
 LINE_2 = 0xC0 # LCD RAM Address
 
-def lock_lcd():
-  f = open(lcd_lock_file_path,'w')
-  f.close()
-
-def unlock_lcd():
-  os.remove(lcd_lock_file_path)
-
 def lcd_is_locked():
   return os.path.exists(lcd_lock_file_path)
+
+def lock_lcd():
+  if not lcd_is_locked():
+    f = open(lcd_lock_file_path,'w')
+    f.close()
+
+def unlock_lcd():
+  if lcd_is_locked():
+    os.remove(lcd_lock_file_path)
+
+def switching_cam():
+  return os.path.exists(switching_cam_file_path)
+
+def set_switching_cam(set_on):
+  if set_on:
+    if not switching_cam():
+      f = open(switching_cam_file_path,'w')
+      f.close()
+  elif switching_cam():
+    os.remove(switching_cam_file_path)
 
 def setdata(value):
   GPIO.output(data, GPIO.HIGH if value else GPIO.LOW)
