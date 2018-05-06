@@ -138,7 +138,7 @@ function onRequest(request, response)
 	if (requestURL.pathname == '/')
 	{
 		// Get current reading.
-		var reading = fs.readFileSync('/sys/bus/w1/devices/28-000007099503/w1_slave','utf8');
+		var reading = fs.readFileSync('/sys/bus/w1/devices/28-011620e000ee/w1_slave','utf8');
 		reading = reading.substr(reading.lastIndexOf('=')+1);
 		var value = parseInt(reading) / 1000;
 		var fahrenheit = (value * 1.8) + 32;

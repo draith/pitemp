@@ -20,24 +20,27 @@ both_buttons = (left_button,mid_button)
 
 def left_button_pressed(channel):
   #global switching_cam
-  
+  print("left button pressed")
   if GPIO.input(left_button) == GPIO.LOW:
     # Toggle display between camera control and temperature display
     set_switching_cam(not switching_cam())
     if switching_cam():
+      print("switching_cam TRUE")
       # Wait while temperature display is updating
       while lcd_is_locked():
-        time.sleep(0.3);
+        time.sleep(0.3)
       # Prevent temperature display from overwriting status display.
       lock_lcd()
       # Display pycam status.
       disp_status()
     else:
+      print("switching_cam FALSE")
       # Display current time/temp
       show_temp()
       # Unlock display for further temperature updates
       unlock_lcd()
     # debounce
+    print("debounce sleep 0.3")
     time.sleep(0.3)
 
 def pycam_running():

@@ -1,5 +1,5 @@
 #!/bin/sh
-SOURCE='/sys/bus/w1/devices/28-000007099503/w1_slave'
+SOURCE='/sys/bus/w1/devices/28-011620e000ee/w1_slave'
 TEMPSTRING=$(cat $SOURCE)
 TEMPVAL=${TEMPSTRING##*=}
 TIMESTAMP=$(date -u "+%Y-%m-%d%%20%H:%M:00")

@@ -9,7 +9,7 @@ maxfilepath = '/var/ram/maxtemp.txt'
 minfilepath = '/var/ram/mintemp.txt'
 
 def show_temp():
-  f = open('/sys/bus/w1/devices/28-000007099503/w1_slave','r')
+  f = open('/sys/bus/w1/devices/28-011620e000ee/w1_slave','r')
   file_content = f.read()
   f.close()
   pos = file_content.rfind('t=')
