@@ -12,8 +12,8 @@ try:
 except RuntimeError:
   print("Error importing RPi.GPIO!  This is probably because you need superuser privileges.  You can achieve this by using 'sudo' to run your script")
 
-left_button = 11
-mid_button = 13
+left_button = 35 #11
+mid_button = 37 #13
 both_buttons = (left_button,mid_button)
 
 #switching_cam = False
@@ -74,8 +74,8 @@ def mid_button_pressed(channel):
       disp_status()
     except:
       send_string("Status: EXCEPTION", LINE_2)
-      
-    
+
+
 # Set up GPIO pins
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
