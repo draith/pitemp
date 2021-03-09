@@ -1,6 +1,16 @@
 #!/bin/sh
 SOURCE='/sys/bus/w1/devices/28-011620e000ee/w1_slave'
-TEMPSTRING=$(cat $SOURCE)
+TEMPSTRING=''
+TRIES=0
+while [ "$TEMPSTRING" = "" ]
+do
+  TRIES=$((TRIES + 1))
+  if [ "$TRIES" = "4" ] 
+  then
+    exit "0"
+  fi
+  TEMPSTRING=$(cat $SOURCE)
+done
 TEMPVAL=${TEMPSTRING##*=}
 TIMESTAMP=$(date -u "+%Y-%m-%d%%20%H:%M:00")
 
